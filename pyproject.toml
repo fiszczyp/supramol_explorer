@@ -1,0 +1,68 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PROJECT_NAME"
+description = "PROJECT_DESCRIPTION"
+version = "0.0.1"
+requires-python = ">=3.12"
+authors = [
+    { name = "Filip T. Szczypiński", email = "fiszczyp@gmail.com" },
+]
+dependencies = [
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+
+    [project.urls]
+    Repository = "GITHUB_URL"
+
+    [project.optional-dependencies]
+    dev = [
+        "pre-commit",
+        "black",
+        "docformatter",
+        "interrogate",
+        "ipython",
+        "isort",
+        "pycodestyle",
+        "pydocstyle",
+        "pytest",
+        "pytest-cov",
+        "flake8",
+    ]
+
+[tool.setuptools]
+include-package-data = true
+
+    [tool.setuptools.packages.find]
+    where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed", "*.mplstyle"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
+[tool.interrogate]
+verbose                    = 2
+ignore-setters             = true
+ignore-property-decorators = true
+ignore-magic               = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+
+[tool.isort]
+profile         = "black"
+force_grid_wrap = 2
+line_length     = 79
