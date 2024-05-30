@@ -26,17 +26,18 @@ classifiers = [
 
     [project.optional-dependencies]
     dev = [
-        "pre-commit",
         "black",
         "docformatter",
+        "flake8",
         "interrogate",
         "ipython",
         "isort",
+        "pre-commit",
         "pycodestyle",
         "pydocstyle",
         "pytest",
         "pytest-cov",
-        "flake8",
+        "tox",
     ]
 
 [tool.setuptools]
