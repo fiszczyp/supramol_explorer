@@ -5,8 +5,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "PROJECT_NAME"
-description = "PROJECT_DESCRIPTION"
+name = "supramol_explorer"
+description = "Explorer of supramolecular architectures"
 version = "0.0.1"
 requires-python = ">=3.12"
 authors = [
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
     [project.urls]
-    Repository = "GITHUB_URL"
+    Repository = "https://github.com/fiszczyp/supramol_explorer"
 
     [project.optional-dependencies]
     dev = [
