@@ -5,15 +5,21 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "supramol_explorer"
-description = "Explorer of supramolecular architectures"
-version = "0.0.1"
+name            = "supramol_explorer"
+description     = "Explorer of supramolecular architectures"
+version         = "0.0.1"
 requires-python = ">=3.12"
+
 authors = [
     { name = "Filip T. Szczypiński", email = "fiszczyp@gmail.com" },
 ]
+
 dependencies = [
+    "ts-remote-api",
+    "bruker-nmr-api",
+    "fourier_nmr_driver@git+https://github.com/cooper-group-uol-robotics/fourier_nmr_driver",
 ]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
