@@ -15,7 +15,7 @@ authors = [
 dependencies = [
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Chemistry",
@@ -26,18 +26,13 @@ classifiers = [
 
     [project.optional-dependencies]
     dev = [
-        "black",
-        "docformatter",
-        "flake8",
         "interrogate",
         "ipython",
-        "isort",
+        "nox",
         "pre-commit",
-        "pycodestyle",
-        "pydocstyle",
         "pytest",
         "pytest-cov",
-        "tox",
+        "ruff",
     ]
 
 [tool.setuptools]
@@ -63,7 +58,17 @@ ignore-magic               = true
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
 
-[tool.isort]
-profile         = "black"
-force_grid_wrap = 2
-line_length     = 79
+[tool.ruff]
+line-length = 79
+target-version = "py311"
+select = [
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+
+    [tool.ruff.lint.pydocstyle]
+    convention = "google" # or numpy
