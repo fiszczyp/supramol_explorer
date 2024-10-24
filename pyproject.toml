@@ -15,11 +15,6 @@ authors = [
 ]
 
 dependencies = [
-    "ts-remote-api",
-    "bruker-nmr-api",
-    "fourier_nmr_driver@git+https://github.com/cooper-group-uol-robotics/fourier_nmr_driver",
-    "lcms_parser@git+https://github.com/cooper-group-uol-robotics/fourier_nmr_driver",
-    "masslynx",
     "sqlalchemy>=2.0",
 ]
 
