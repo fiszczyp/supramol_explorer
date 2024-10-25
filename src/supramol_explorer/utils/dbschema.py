@@ -159,7 +159,8 @@ class NMRProcessingParameterSet(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     relative_height: Mapped[float]
-    peak_picking_range: Mapped[tuple[float, float]]
+    peak_picking_range_left: Mapped[float]
+    peak_picking_range_right: Mapped[float]
     peak_picking_threshold: Mapped[float]
     spectrum_size: Mapped[int]
     line_broadening: Mapped[float]
@@ -172,7 +173,7 @@ class NMRProcessedData(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nmr_proc_params_id: Mapped[int] = mapped_column(
-        ForeignKey("nmr_processing_param.id")
+        ForeignKey("nmr_processing_params.id")
     )
     experiment_id: Mapped[int] = mapped_column(ForeignKey("experiment.id"))
 
@@ -264,9 +265,8 @@ class MSProcessedData(Base):
     ms_proc_params_id: Mapped[int] = mapped_column(
         ForeignKey("ms_processing_params.id")
     )
-    interpretation_id: Mapped[int] = mapped_column(
-        ForeignKey("ms_interpretation.id")
-    )
+
+    interpretation_confidence: Mapped[ConfidenceEnum]
 
     ms_proc_params: Mapped["MSProcessingParameterSet"] = relationship(
         foreign_keys=[ms_proc_params_id]
@@ -276,8 +276,7 @@ class MSProcessedData(Base):
     mz_values: Mapped[list["MZValueObserved"]] = relationship(
         back_populates="ms_data"
     )
-
-    interpretation: Mapped["MSInterpretation"] = relationship(
+    interpretations: Mapped[list["MSInterpretation"]] = relationship(
         back_populates="ms_data"
     )
 
@@ -352,18 +351,37 @@ class MZMatch(Base):
     )
 
 
+class MSDecisionParameterSet(Base):
+    """Decision making set for MS."""
+
+    __tablename__ = "ms_decision_params"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    multiple_mz_trigger_charge: Mapped[int]
+    mz_matches_low: Mapped[int]
+    mz_matches_medium: Mapped[int]
+    mz_matches_high: Mapped[int]
+    mz_matches_certain: Mapped[int]
+
+
 class MSInterpretation(Base):
     """MS interpretation data."""
 
     __tablename__ = "ms_interpretation"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    ms_decision_params_id: Mapped[int] = mapped_column(
+        ForeignKey("ms_decision_params.id")
+    )
     ms_data_id: Mapped[int] = mapped_column(ForeignKey("ms_processed_data.id"))
-
     confidence: Mapped[ConfidenceEnum]
 
-    ms_data: Mapped["MSInterpretation"] = relationship(
-        back_populates="interpretation"
+    ms_decision_params: Mapped["MSDecisionParameterSet"] = relationship(
+        foreign_keys=[ms_decision_params_id]
+    )
+    ms_data: Mapped["MSProcessedData"] = relationship(
+        foreign_keys=[ms_data_id],
+        back_populates="interpretations",
     )
 
 
