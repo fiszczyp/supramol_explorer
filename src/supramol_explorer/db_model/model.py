@@ -386,6 +386,9 @@ class MZMatch(Base):
     mz_predicted: Mapped["MZValuePredicted"] = relationship(
         back_populates="mz_matches"
     )
+    mz_tolerance: Mapped["MZTolerance"] = relationship(
+        foreign_keys=[mz_tolerance_id]
+    )
 
 
 class MSDecisionParameterSet(Base):
@@ -394,7 +397,7 @@ class MSDecisionParameterSet(Base):
     __tablename__ = "ms_decision_params"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    multiple_mz_trigger_charge: Mapped[int]
+    multiple_mz_trigger_charge: Mapped[int | None]
     mz_matches_low: Mapped[int]
     mz_matches_medium: Mapped[int]
     mz_matches_high: Mapped[int]
@@ -411,6 +414,7 @@ class MSInterpretation(Base):
         ForeignKey("ms_decision_params.id")
     )
     ms_data_id: Mapped[int] = mapped_column(ForeignKey("ms_processed_data.id"))
+    assembly_id: Mapped[int] = mapped_column(ForeignKey("assembly.id"))
     confidence: Mapped[ConfidenceEnum]
 
     ms_decision_params: Mapped["MSDecisionParameterSet"] = relationship(
@@ -418,6 +422,10 @@ class MSInterpretation(Base):
     )
     ms_data: Mapped["MSProcessedData"] = relationship(
         foreign_keys=[ms_data_id],
+        back_populates="interpretations",
+    )
+    assembly: Mapped["SupramolecularAssembly"] = relationship(
+        foreign_keys=[assembly_id],
         back_populates="interpretations",
     )
 
@@ -517,5 +525,8 @@ class SupramolecularAssembly(Base):
         back_populates="assemblies"
     )
     mz_predictions: Mapped[list["MZValuePredicted"]] = relationship(
+        back_populates="assembly"
+    )
+    interpretations: Mapped[list["MSInterpretation"]] = relationship(
         back_populates="assembly"
     )
