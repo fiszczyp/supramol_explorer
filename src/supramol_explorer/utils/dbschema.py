@@ -52,8 +52,8 @@ class Reagent(Base):
     name
         Chemical name (either IUPAC or a nickname).
     exact_mass
-        Exact mass of the molecule (ideally monoisotopic for
-        future m/z calculations).
+        Exact mass of the main component (ideally monoisotopic for future m/z
+        calculations), i.e. the cation for metal sources.
     nmr_data
         A path to the NMR data folder.
     role
@@ -67,12 +67,15 @@ class Reagent(Base):
     """
 
     __tablename__ = "reagent"
+    __mapper_args__ = {
+        "polymorphic_on": "role",
+        "polymorphic_identity": "reagent",
+    }
 
     id: Mapped[int] = mapped_column(primary_key=True)
     cas_number: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str]
     exact_mass: Mapped[float]
-    nmr_data: Mapped[str]
     role: Mapped[ReagentRole]
     descriptors: Mapped[list["ReagentDescriptor"]] = relationship(
         back_populates="reagent"
@@ -85,9 +88,44 @@ class Reagent(Base):
             f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
-            f"nmr_data={self.nmr_data!r}, "
             f"role={self.role!r})"
         )
+
+
+class MetalReagent(Reagent):
+    __tablename__ = "metal"
+    __mapper_args__ = {
+        "polymorphic_identity": "metal",
+    }
+
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
+    anion_name: Mapped[str]
+    anion_exact_mass: Mapped[float]
+
+
+class HasNMR:
+    nmr_data: Mapped[str] = mapped_column(
+        nullable=True,
+        use_existing_column=True,
+    )
+
+
+class AmineReagent(HasNMR, Reagent):
+    __tablename__ = "amine"
+    __mapper_args__ = {
+        "polymorphic_identity": "amine",
+    }
+
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
+
+
+class CarbonylReagent(HasNMR, Reagent):
+    __tablename__ = "carbonyl"
+    __mapper_args__ = {
+        "polymorphic_identity": "carbonyl",
+    }
+
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
 
 class Descriptor(Base):
