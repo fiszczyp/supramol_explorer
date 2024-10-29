@@ -33,6 +33,7 @@ class ConfidenceEnum(IntEnum):
     HIGH = 75
     MEDIUM = 50
     LOW = 25
+    NONE = 0
 
 
 class Base(DeclarativeBase):
@@ -303,8 +304,6 @@ class MSProcessedData(Base):
     ms_proc_params_id: Mapped[int] = mapped_column(
         ForeignKey("ms_processing_params.id")
     )
-
-    interpretation_confidence: Mapped[ConfidenceEnum]
 
     ms_proc_params: Mapped["MSProcessingParameterSet"] = relationship(
         foreign_keys=[ms_proc_params_id]
