@@ -516,13 +516,14 @@ class SupramolecularAssembly(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     experiment_id: Mapped[int] = mapped_column(ForeignKey("experiment.id"))
-    n_metals: Mapped[int]
-    n_amines: Mapped[int]
-    n_carbonyls: Mapped[int]
+    topology_id: Mapped[int] = mapped_column(ForeignKey("topology.id"))
     cation_exact_mass: Mapped[float]
 
     experiment: Mapped["Experiment"] = relationship(
         back_populates="assemblies"
+    )
+    topology: Mapped["AssemblyTopology"] = relationship(
+        foreign_keys=[topology_id]
     )
     mz_predictions: Mapped[list["MZValuePredicted"]] = relationship(
         back_populates="assembly"
@@ -530,3 +531,19 @@ class SupramolecularAssembly(Base):
     interpretations: Mapped[list["MSInterpretation"]] = relationship(
         back_populates="assembly"
     )
+
+
+class AssemblyTopology(Base):
+    """Possible topologies of the supramolecular assemblies."""
+
+    __tablename__ = "topology"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    n_metals: Mapped[int]
+    n_amines: Mapped[int]
+    n_carbonyls: Mapped[int]
+
+    amine_topicity: Mapped[int]
+    carbonyl_topicity: Mapped[int]
+    coordination_number: Mapped[int]
