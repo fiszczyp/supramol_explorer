@@ -8,7 +8,7 @@ Create an isolated environment (with `venv` or `conda`):
 python -m venv venv
 venv/Scripts/activate    # on Windows
 source venv/bin/activate # on Linux
-python -m pip install --find-links wheels .
+python -m pip install . --find-links wheels
 ```
 
 ## TopSpin Requirements
@@ -35,6 +35,6 @@ be applied if the optional dependencies have been installed. Editable install
 (`-e`) is recommended for code development and `pre-commit` should take care of code consistency when contributing.
 
 ```
-python -m pip install -e --find-links wheels .[dev]
+python -m pip install -e .[dev] --find-links wheels
 pre-commit install
 ```
