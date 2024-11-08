@@ -25,6 +25,9 @@ class ReagentRole(StrEnum):
     carbonyl = "carbonyl"
     metal = "metal"
 
+    def __repr__(self) -> str:
+        return f"ReagentRole.{self.name}"
+
 
 class ConfidenceEnum(IntEnum):
     """Confidence scores."""
@@ -35,6 +38,9 @@ class ConfidenceEnum(IntEnum):
     LOW = 25
     NONE = 0
 
+    def __repr__(self) -> str:
+        return f"ConfidenceEnum.{self.name}"
+
 
 class Base(DeclarativeBase):
     """Declarative ORM base class for SQLAlchemy."""
@@ -43,8 +49,7 @@ class Base(DeclarativeBase):
 
 
 class Reagent(Base):
-    """
-    Data related to the reagents used in the workflow.
+    """Data related to all the reagents used in the workflow.
 
     Attributes
     ----------
@@ -64,6 +69,11 @@ class Reagent(Base):
     ------------------
     descriptors
         A list of the cheminformatics descriptors associated with the reagent.
+
+    Notes
+    -----
+    This is a base reagent class from which more specific reagent classes might
+    inherit (e.g., if they are allowed to store additional data).
 
     """
 
@@ -85,7 +95,6 @@ class Reagent(Base):
     def __repr__(self) -> str:
         return (
             "Reagent("
-            f"id={self.id!r}, "
             f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
@@ -94,6 +103,20 @@ class Reagent(Base):
 
 
 class MetalReagent(Reagent):
+    """Data related to metal reagents.
+
+    Extends the Reagent class by data fields relevant to metals used in the
+    workflow, such as the anion information.
+
+    Attributes
+    ----------
+    anion_name
+        Name of the anion.
+    anion_exact_mass
+        Exact mass of the anion, ideally monoisotopic for m/z calculations.
+
+    """
+
     __tablename__ = "metal"
     __mapper_args__ = {
         "polymorphic_identity": "metal",
@@ -103,15 +126,43 @@ class MetalReagent(Reagent):
     anion_name: Mapped[str]
     anion_exact_mass: Mapped[float]
 
+    def __repr__(self) -> str:
+        return (
+            "MetalReagent("
+            f"cas_number={self.cas_number!r}, "
+            f"name={self.name!r}, "
+            f"exact_mass={self.exact_mass!r}, "
+            f"role={self.role!r}, "
+            f"anion_name={self.anion_name!r}, "
+            f"anion_exact_mass={self.anion_exact_mass!r})"
+        )
 
-class HasNMR:
+
+class _HasNMR:
+    """Mixin class for reagents that contain NMR data.
+
+    Attributes
+    ----------
+    nmr_data
+        Path to the NMR data folder.
+
+    """
+
     nmr_data: Mapped[str] = mapped_column(
         nullable=True,
         use_existing_column=True,
     )
 
 
-class AmineReagent(HasNMR, Reagent):
+class AmineReagent(_HasNMR, Reagent):
+    """Data related to amine reagents.
+
+    Notes
+    -----
+    Extends the Reagent class with a NMR data through the HasNMR mixin.
+
+    """
+
     __tablename__ = "amine"
     __mapper_args__ = {
         "polymorphic_identity": "amine",
@@ -119,14 +170,42 @@ class AmineReagent(HasNMR, Reagent):
 
     id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
+    def __repr__(self) -> str:
+        return (
+            "AmineReagent("
+            f"cas_number={self.cas_number!r}, "
+            f"name={self.name!r}, "
+            f"exact_mass={self.exact_mass!r}, "
+            f"role={self.role!r}, "
+            f"nmr_data={self.nmr_data!r})"
+        )
 
-class CarbonylReagent(HasNMR, Reagent):
+
+class CarbonylReagent(_HasNMR, Reagent):
+    """Data related to amine reagents.
+
+    Notes
+    -----
+    Extends the Reagent class with a NMR data through the HasNMR mixin.
+
+    """
+
     __tablename__ = "carbonyl"
     __mapper_args__ = {
         "polymorphic_identity": "carbonyl",
     }
 
     id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
+
+    def __repr__(self) -> str:
+        return (
+            "CarbonylReagent("
+            f"cas_number={self.cas_number!r}, "
+            f"name={self.name!r}, "
+            f"exact_mass={self.exact_mass!r}, "
+            f"role={self.role!r}, "
+            f"nmr_data={self.nmr_data!r})"
+        )
 
 
 class Descriptor(Base):
@@ -146,7 +225,7 @@ class Descriptor(Base):
     name: Mapped[str]
 
     def __repr__(self) -> str:
-        return f"Descriptor(id={self.id!r}, name={self.name!r})"
+        return f"Descriptor(name={self.name!r})"
 
 
 class ReagentDescriptor(Base):
@@ -155,17 +234,12 @@ class ReagentDescriptor(Base):
 
     Attributes
     ----------
-    reagent_id
-        Unique ID of the reagent.
-    descriptor_id
-        Unique ID of the descriptor.
+    reagent
+        A reagent that the value corresponds to.
+    descriptor
+        A descriptor whose value is stored.
     value
         Value of the descriptor, parsing has to be handled separately.
-
-    Derived attributes
-    ------------------
-    descriptor
-        A relationship to the corresponding descriptor object.
 
     """
 
@@ -185,28 +259,72 @@ class ReagentDescriptor(Base):
     def __repr__(self) -> str:
         return (
             "ReagentDescriptor("
-            f"reagent_id={self.reagent_id!r}, "
-            f"descriptor_id={self.descriptor_id!r}, "
+            f"reagent={self.reagent!r}, "
+            f"descriptor={self.descriptor!r}, "
             f"value={self.value!r})"
         )
 
 
 class NMRProcessingParameterSet(Base):
-    """NMR processing parameter set."""
+    """Parameters set for NMR data processing.
+
+    Attributes
+    ----------
+    relative_height
+        Relative peak height used for peak picking.
+    peak_picking_threshold
+        Peak threshold used for peak picking.
+    peak_picking_range_left
+        Downfield limit of the peak picking range (in ppm).
+    peak_picking_range_right
+        Upfield limit of the peak picking range (in ppm).
+    spectrum_size
+        Size of the spectrum (used for zero filling in TopSpin).
+    line_broadening
+        Exponential multiplication line broadening factor.
+
+    """
 
     __tablename__ = "nmr_processing_params"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     relative_height: Mapped[float]
+    peak_picking_threshold: Mapped[float]
     peak_picking_range_left: Mapped[float]
     peak_picking_range_right: Mapped[float]
-    peak_picking_threshold: Mapped[float]
     spectrum_size: Mapped[int]
     line_broadening: Mapped[float]
 
+    def __repr__(self) -> str:
+        return (
+            "NMRProcessingParameterSet("
+            f"relative_height={self.relative_height!r}, "
+            f"peak_picking_threshold={self.peak_picking_threshold!r}, "
+            f"peak_picking_range_left={self.peak_picking_range_left!r}, "
+            f"peak_picking_range_right={self.peak_picking_range_right!r}, "
+            f"spectrum_size={self.spectrum_size!r}, "
+            f"line_broadening={self.line_broadening!r}) "
+        )
+
 
 class NMRProcessedData(Base):
-    """NMR processed data."""
+    """Processed NMR data.
+
+    Attributes
+    ----------
+    experiment
+        Experiment that the NMR data correspond to.
+    nmr_proc_params
+        Processing parameters that the data were processed with.
+
+    Derived attributes
+    ------------------
+    nmr_peaks
+        A list of NMR peaks identified in the dataset.
+    interpretations
+        A list of possible data interpretations of the dataset.
+
+    """
 
     __tablename__ = "nmr_processed_data"
 
@@ -228,9 +346,29 @@ class NMRProcessedData(Base):
         back_populates="nmr_data"
     )
 
+    def __repr__(self) -> str:
+        return (
+            "NMRProcessedData("
+            f"experiment={self.experiment!r}, "
+            f"nmr_proc_params={self.nmr_proc_params!r}, "
+            f"nmr_peaks={self.nmr_peaks!r}, "
+            f"interpretations={self.interpretations!r})"
+        )
+
 
 class NMRPeak(Base):
-    """NMR peak data."""
+    """Data related to NMR peaks.
+
+    Attributes
+    ----------
+    peak_ppm
+        Chemical shift of the peak.
+    is_sm
+        If True, the peak is assumed to originate from the starting material.
+    nmr_data
+        The processed NMR data object that the peak is identified in.
+
+    """
 
     __tablename__ = "nmr_peaks_ppm"
 
@@ -245,9 +383,30 @@ class NMRPeak(Base):
         back_populates="nmr_peaks"
     )
 
+    def __repr__(self) -> str:
+        return (
+            "NMRPeak("
+            f"peak_ppm={self.peak_ppm!r}, "
+            f"is_sm={self.is_sm!r}, "
+            f"nmr_data={self.nmr_data!r})"
+        )
+
 
 class NMRDecisionParameterSet(Base):
-    """Decision making set for NMR."""
+    """Parameters set for NMR-based decisions.
+
+    Attributes
+    ----------
+    peak_number_tolerance
+        Difference in the number of peaks allowed from the starting materials.
+    peak_shift_proportion
+        A proportion of peaks that must have different chemical shifts than in
+        the starting materials.
+    sm_peaks_allowed
+        If True, starting materials peaks will be allowed to be present in the
+        NMR spectrum (might still give lower confidence ratings).
+
+    """
 
     __tablename__ = "nmr_decision_params"
 
@@ -256,9 +415,33 @@ class NMRDecisionParameterSet(Base):
     peak_shift_proportion: Mapped[float]
     sm_peaks_allowed: Mapped[bool]
 
+    def __repr__(self) -> str:
+        return (
+            "NMRDecisionParameterSet("
+            f"peak_number_tolerance={self.peak_number_tolerance!r}, "
+            f"peak_shift_proportion={self.peak_shift_proportion!r}, "
+            f"sm_peaks_allowed={self.sm_peaks_allowed!r})"
+        )
+
 
 class NMRInterpretation(Base):
-    """NMR interpretation data."""
+    """Interpretations of the processed NMR datasets.
+
+    Attributes
+    ----------
+    nmr_data
+        The processed NMR dataset that the decision is based on.
+    nmr_decision_params
+        Parameters upon which the decision is based.
+    symmetrical
+        If True, the structure is considered symmetrical.
+    pure
+        If True, the structure is considered pure (e.g., without starting
+        materials present).
+    confidence
+        Algorithmic confidence in the decision made.
+
+    """
 
     __tablename__ = "nmr_interpretation"
 
@@ -281,9 +464,34 @@ class NMRInterpretation(Base):
         back_populates="interpretations",
     )
 
+    def __repr__(self) -> str:
+        return (
+            "NMRInterpretation("
+            f"nmr_data={self.nmr_data!r}, "
+            f"nmr_decision_params={self.nmr_decision_params!r}, "
+            f"symmetrical={self.symmetrical!r}, "
+            f"pure={self.pure!r}, "
+            f"confidence={self.confidence!r})"
+        )
+
 
 class MSProcessingParameterSet(Base):
-    """MS processing parameter set."""
+    """Parameters set for MS data processing.
+
+    Attributes
+    ----------
+    tic_pp_height
+        Relative height of the peaks used for peak picking in the total ion
+        chromatogram.
+    tic_pp_distance
+        Peak distance used for peak picking in the total ion chromatogram.
+    ms_pp_height
+        Relative height of the peaks used for peak picking in the extracted
+        mass spectra.
+    ms_pp_distance
+        Peak distance used for peak picking in the extracted mass spectra.
+
+    """
 
     __tablename__ = "ms_processing_params"
 
@@ -292,6 +500,15 @@ class MSProcessingParameterSet(Base):
     tic_pp_distance: Mapped[float]
     ms_pp_height: Mapped[float]
     ms_pp_distance: Mapped[float]
+
+    def __repr__(self) -> str:
+        return (
+            "MSProcessingParameterSet("
+            f"tic_pp_height={self.tic_pp_height!r}, "
+            f"tic_pp_distance={self.tic_pp_distance!r}, "
+            f"ms_pp_height={self.ms_pp_height!r}, "
+            f"ms_pp_distance={self.ms_pp_distance!r})"
+        )
 
 
 class MSProcessedData(Base):
