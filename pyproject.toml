@@ -65,14 +65,19 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 79
 target-version = "py311"
-select = [
+lint.select = [
     "E",   # pycodestyle
     "F",   # Pyflakes
     "UP",  # pyupgrade
     "B",   # flake8-bugbear
     "SIM", # flake8-simplify
+    "TD",  # flake8-todos
+    "PTH", # flake8-use-pathlib
+    "ANN", # flake8-annotations
     "I",   # isort
+    "N",   # PEP8 naming
+    "D",   # pydocstyle
 ]
 
     [tool.ruff.lint.pydocstyle]
-    convention = "google" # or numpy
+    convention = "numpy"
