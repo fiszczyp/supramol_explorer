@@ -78,6 +78,10 @@ lint.select = [
     "N",   # PEP8 naming
     "D",   # pydocstyle
 ]
+lint.ignore = [
+    "ANN101",
+    "D105",
+]
 
     [tool.ruff.lint.pydocstyle]
     convention = "numpy"
