@@ -59,7 +59,8 @@ class Reagent(Base):
         Chemical name (either IUPAC or a nickname).
     exact_mass
         Exact mass of the main component (ideally monoisotopic for future m/z
-        calculations), i.e. the cation for metal sources.
+        calculations), as used in the synthesis (i.e., entire salt for the
+        metal sources).
     nmr_data
         A path to the NMR data folder.
     role
@@ -102,6 +103,26 @@ class Reagent(Base):
         )
 
 
+class Ion(Base):
+    """Data related to cations and anions for metal reagents.
+
+    Used to remove redundancy for different metal salts.
+
+    Attributes
+    ----------
+    name
+        Name of the ion.
+    exact_mass
+        Exact mass of the anion, ideally monoisotopic, ignoring the charge.
+
+    """
+
+    __tablename__ = "ion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    exact_mass: Mapped[float]
+
+
 class MetalReagent(Reagent):
     """Data related to metal reagents.
 
@@ -110,10 +131,14 @@ class MetalReagent(Reagent):
 
     Attributes
     ----------
-    anion_name
-        Name of the anion.
-    anion_exact_mass
-        Exact mass of the anion, ideally monoisotopic for m/z calculations.
+    cation
+        The cation part of the metal reagent.
+    num_cations
+        Number of cations present in the salt.
+    anion
+        The anion part of the metal reagent.
+    num_anions
+        Number of anions present in the salt.
 
     """
 
@@ -123,18 +148,25 @@ class MetalReagent(Reagent):
     }
 
     id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
-    anion_name: Mapped[str]
-    anion_exact_mass: Mapped[float]
+    cation_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
+    num_cations: Mapped[int]
+    anion_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
+    num_anions: Mapped[int]
+
+    cation: Mapped["Ion"] = relationship(foreign_keys=[cation_id])
+    anion: Mapped["Ion"] = relationship(foreign_keys=[anion_id])
 
     def __repr__(self) -> str:
         return (
             "MetalReagent("
             f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
-            f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r}, "
-            f"anion_name={self.anion_name!r}, "
-            f"anion_exact_mass={self.anion_exact_mass!r})"
+            f"exact_mass={self.exact_mass!r}, "
+            f"cation={self.cation!r}, "
+            f"num_cations={self.num_cations!r}, "
+            f"anion={self.anion!r}, "
+            f"num_anions={self.num_anions!r})"
         )
 
 
