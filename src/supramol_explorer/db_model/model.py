@@ -53,8 +53,6 @@ class Reagent(Base):
 
     Attributes
     ----------
-    cas_number
-        The unique CAS number associated with the substance.
     name
         Chemical name (either IUPAC or a nickname).
     exact_mass
@@ -85,7 +83,6 @@ class Reagent(Base):
     }
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    cas_number: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str]
     exact_mass: Mapped[float]
     role: Mapped[ReagentRole]
@@ -96,7 +93,6 @@ class Reagent(Base):
     def __repr__(self) -> str:
         return (
             "Reagent("
-            f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r})"
@@ -120,7 +116,16 @@ class Ion(Base):
     __tablename__ = "ion"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    formula: Mapped[str]
     exact_mass: Mapped[float]
+
+    def __repr__(self) -> str:
+        return (
+            "Ion("
+            f"name={self.name!r}, "
+            f"formula={self.formula!r}, "
+            f"exact_mass={self.exact_mass!r})"
+        )
 
 
 class MetalReagent(Reagent):
@@ -159,7 +164,6 @@ class MetalReagent(Reagent):
     def __repr__(self) -> str:
         return (
             "MetalReagent("
-            f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"role={self.role!r}, "
             f"exact_mass={self.exact_mass!r}, "
@@ -186,7 +190,49 @@ class _HasNMR:
     )
 
 
-class AmineReagent(_HasNMR, Reagent):
+class _Organic:
+    """Mixin class for organic reagents.
+
+    This is a useful class because InChI, SMILES, and CAS numbers might be
+    meaningless for metal sources (where for example different solvates can be
+    bought from different suppliers but are otherwise equivalent).
+
+    Attributes
+    ----------
+    inchi
+        International Chemical Identifier (InChI); standard way of encoding
+        chemical substances, contains all relevant structural information.
+    inchikey
+        One-way hash of InChI, stored in the database for easier retrieval.
+    cas_number
+        The unique CAS number associated with the substance; optional as new
+        compounds might be synthesised in-house for the project.
+    chemspider_id
+        The unique ChemSpider ID associated with the substance, for integration
+        with the ChemSpider API (or ChemSpiderPy); optional as new compounds
+        might be synthesised in-house for the project.
+
+    """
+
+    inchi: Mapped[str] = mapped_column(
+        nullable=True,
+        use_existing_column=True,
+    )
+    inchikey: Mapped[str] = mapped_column(
+        nullable=True,
+        use_existing_column=True,
+    )
+    cas_number: Mapped[str] = mapped_column(
+        nullable=True,
+        use_existing_column=True,
+    )
+    chemspider_id: Mapped[str] = mapped_column(
+        nullable=True,
+        use_existing_column=True,
+    )
+
+
+class AmineReagent(_HasNMR, _Organic, Reagent):
     """Data related to amine reagents.
 
     Notes
@@ -205,15 +251,18 @@ class AmineReagent(_HasNMR, Reagent):
     def __repr__(self) -> str:
         return (
             "AmineReagent("
-            f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r}, "
-            f"nmr_data={self.nmr_data!r})"
+            f"nmr_data={self.nmr_data!r}, "
+            f"inchi={self.inchi!r}, "
+            f"inchikey={self.inchikey!r}, "
+            f"cas_number={self.cas_number!r}, "
+            f"chemspider_id={self.chemspider_id!r})"
         )
 
 
-class CarbonylReagent(_HasNMR, Reagent):
+class CarbonylReagent(_HasNMR, _Organic, Reagent):
     """Data related to amine reagents.
 
     Notes
@@ -232,11 +281,14 @@ class CarbonylReagent(_HasNMR, Reagent):
     def __repr__(self) -> str:
         return (
             "CarbonylReagent("
-            f"cas_number={self.cas_number!r}, "
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r}, "
-            f"nmr_data={self.nmr_data!r})"
+            f"nmr_data={self.nmr_data!r}, "
+            f"inchi={self.inchi!r}, "
+            f"inchikey={self.inchikey!r}, "
+            f"cas_number={self.cas_number!r}, "
+            f"chemspider_id={self.chemspider_id!r})"
         )
 
 
