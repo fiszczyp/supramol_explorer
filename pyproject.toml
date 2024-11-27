@@ -38,6 +38,17 @@ classifiers = [
         "pytest-cov",
         "ruff",
     ]
+    topspin = [
+        "numpy",
+        "matplotlib",
+        "adjustText",
+        "jupyterlab",
+        "jupyter",
+        "pandas",
+        "ts_remote_api",
+        "bruker_nmr_api",
+        "fourier_nmr_driver@git+https://github.com/cooper-group-uol-robotics/fourier_nmr_driver",
+    ]
 
 [tool.setuptools]
 include-package-data = true
@@ -77,6 +88,10 @@ lint.select = [
     "I",   # isort
     "N",   # PEP8 naming
     "D",   # pydocstyle
+]
+lint.ignore = [
+    "ANN101",
+    "D105",
 ]
 
     [tool.ruff.lint.pydocstyle]
