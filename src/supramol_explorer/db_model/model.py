@@ -164,10 +164,10 @@ class MetalReagent(Reagent):
         "polymorphic_identity": "metal",
     }
 
-    cation_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
-    num_cations: Mapped[int]
-    anion_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
-    num_anions: Mapped[int]
+    cation_id: Mapped[int | None] = mapped_column(ForeignKey("ion.id"))
+    num_cations: Mapped[int | None]
+    anion_id: Mapped[int | None] = mapped_column(ForeignKey("ion.id"))
+    num_anions: Mapped[int | None]
 
     cation: Mapped["Ion"] = relationship(foreign_keys=[cation_id])
     anion: Mapped["Ion"] = relationship(foreign_keys=[anion_id])
