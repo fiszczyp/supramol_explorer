@@ -160,12 +160,10 @@ class MetalReagent(Reagent):
 
     """
 
-    __tablename__ = "metal"
     __mapper_args__ = {
         "polymorphic_identity": "metal",
     }
 
-    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
     cation_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
     num_cations: Mapped[int]
     anion_id: Mapped[int] = mapped_column(ForeignKey("ion.id"))
@@ -254,12 +252,9 @@ class AmineReagent(_HasNMR, _Organic, Reagent):
 
     """
 
-    __tablename__ = "amine"
     __mapper_args__ = {
         "polymorphic_identity": "amine",
     }
-
-    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
     def __repr__(self) -> str:
         return (
@@ -284,12 +279,9 @@ class CarbonylReagent(_HasNMR, _Organic, Reagent):
 
     """
 
-    __tablename__ = "carbonyl"
     __mapper_args__ = {
         "polymorphic_identity": "carbonyl",
     }
-
-    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
     def __repr__(self) -> str:
         return (

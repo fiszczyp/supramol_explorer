@@ -13,11 +13,13 @@ from sqlalchemy.orm import sessionmaker
 
 from supramol_explorer.db_model.model import (
     AmineReagent,
+    AssemblyTopology,
     Base,
     CarbonylReagent,
     ConfidenceEnum,
     Descriptor,
     Experiment,
+    Ion,
     MetalReagent,
     MSDecisionParameterSet,
     MSInterpretation,
@@ -48,13 +50,17 @@ Session = sessionmaker(engine)
 
 # Create a metal with two descriptors
 
+zinc = Ion(name="Zn(II)", charge=2, formula="[Zn+2]", exact_mass=63.9)
+triflate = Ion(name="OTf", charge=-1, formula="SO3CF3-", exact_mass=149.0)
+
 metal = MetalReagent(
-    cas_number="54010-75-2",
-    name="zinc(II)",
-    exact_mass=63.9,
-    anion_name="triflate",
-    anion_exact_mass=149.0,
+    name="Zinc triflate",
+    exact_mass="1000",
     role=ReagentRole.metal,
+    cation=zinc,
+    num_cations=1,
+    anion=triflate,
+    num_anions=2,
 )
 
 metal.descriptors.extend(
@@ -130,11 +136,18 @@ failed_experiment = Experiment(
     metal=metal,
 )
 
-cage_assembly_failed = SupramolecularAssembly(
-    experiment=failed_experiment,
+cage_topology = AssemblyTopology(
     n_metals=4,
     n_amines=4,
     n_carbonyls=12,
+    amine_topicity=3,
+    carbonyl_topicity=1,
+    coordination_number=6,
+)
+
+cage_assembly_failed = SupramolecularAssembly(
+    experiment=failed_experiment,
+    topology=cage_topology,
     cation_exact_mass=1817.6,
 )
 
@@ -209,9 +222,7 @@ passed_experiment = Experiment(
 
 cage_assembly_passed = SupramolecularAssembly(
     experiment=passed_experiment,
-    n_metals=4,
-    n_amines=4,
-    n_carbonyls=12,
+    topology=cage_topology,
     cation_exact_mass=1817.6,
 )
 
