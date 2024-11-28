@@ -108,6 +108,10 @@ class Ion(Base):
     ----------
     name
         Name of the ion.
+    charge
+        Charge of the ion.
+    formula
+        Chemical formula of the ion.
     exact_mass
         Exact mass of the anion, ideally monoisotopic, ignoring the charge.
 
@@ -116,6 +120,7 @@ class Ion(Base):
     __tablename__ = "ion"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    charge: Mapped[int]
     formula: Mapped[str]
     exact_mass: Mapped[float]
 
@@ -123,6 +128,7 @@ class Ion(Base):
         return (
             "Ion("
             f"name={self.name!r}, "
+            f"charge={self.charge!r}, "
             f"formula={self.formula!r}, "
             f"exact_mass={self.exact_mass!r})"
         )
