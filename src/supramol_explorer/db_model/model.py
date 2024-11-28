@@ -1,4 +1,13 @@
-"""Schema for the experimental results database."""
+"""Schema for the experimental results database.
+
+Using declarative-style ORM with type hints (SQLAlchemy 2.0):
+- https://docs.sqlalchemy.org/en/20/orm/mapper_config.html
+- https://docs.sqlalchemy.org/en/20/orm/relationships.html
+
+Ideally, that should mean the queries are also ORM-oriented:
+- https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html
+
+"""
 
 # Ignore the ORM id shadowing a Python builtin id.
 # flake8: noqa: A003
