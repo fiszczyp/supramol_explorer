@@ -68,8 +68,6 @@ class Reagent(Base):
         Exact mass of the main component (ideally monoisotopic for future m/z
         calculations), as used in the synthesis (i.e., entire salt for the
         metal sources).
-    nmr_data
-        A path to the NMR data folder.
     role
         Role of the reagent in the synthesis.
 
