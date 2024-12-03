@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 
-def read_json(infile: Path) -> int:
+def read_json(infile: Path) -> str:
     """Read JSON file.
 
     Arguments
