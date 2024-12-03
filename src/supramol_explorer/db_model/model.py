@@ -160,10 +160,12 @@ class MetalReagent(Reagent):
 
     """
 
+    __tablename__ = "metal"
     __mapper_args__ = {
         "polymorphic_identity": "metal",
     }
 
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
     cation_id: Mapped[int | None] = mapped_column(ForeignKey("ion.id"))
     num_cations: Mapped[int | None]
     anion_id: Mapped[int | None] = mapped_column(ForeignKey("ion.id"))
@@ -190,12 +192,12 @@ class _HasNMR:
 
     Attributes
     ----------
-    nmr_data
+    nmr_data_path
         Path to the NMR data folder.
 
     """
 
-    nmr_data: Mapped[str] = mapped_column(
+    nmr_data_path: Mapped[str] = mapped_column(
         nullable=True,
         use_existing_column=True,
     )
@@ -252,9 +254,12 @@ class AmineReagent(_HasNMR, _Organic, Reagent):
 
     """
 
+    __tablename__ = "amine"
     __mapper_args__ = {
         "polymorphic_identity": "amine",
     }
+
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
     def __repr__(self) -> str:
         return (
@@ -262,7 +267,7 @@ class AmineReagent(_HasNMR, _Organic, Reagent):
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r}, "
-            f"nmr_data={self.nmr_data!r}, "
+            f"nmr_data_path={self.nmr_data_path!r}, "
             f"inchi={self.inchi!r}, "
             f"inchikey={self.inchikey!r}, "
             f"cas_number={self.cas_number!r}, "
@@ -279,9 +284,12 @@ class CarbonylReagent(_HasNMR, _Organic, Reagent):
 
     """
 
+    __tablename__ = "carbonyl"
     __mapper_args__ = {
         "polymorphic_identity": "carbonyl",
     }
+
+    id: Mapped[int] = mapped_column(ForeignKey("reagent.id"), primary_key=True)
 
     def __repr__(self) -> str:
         return (
@@ -289,7 +297,7 @@ class CarbonylReagent(_HasNMR, _Organic, Reagent):
             f"name={self.name!r}, "
             f"exact_mass={self.exact_mass!r}, "
             f"role={self.role!r}, "
-            f"nmr_data={self.nmr_data!r}, "
+            f"nmr_data_path={self.nmr_data_path!r}, "
             f"inchi={self.inchi!r}, "
             f"inchikey={self.inchikey!r}, "
             f"cas_number={self.cas_number!r}, "
