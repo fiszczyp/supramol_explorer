@@ -1,0 +1,49 @@
+site_name: SAMOSA Supramolecular Explorer
+site_description: "Self-Assembly of Metal-Organic Supramolecular Architectures"
+site_author: "Filip T. Szczypiński"
+site_url: "https://fiszczyp.github.io/supramol_explorer"
+repo_url: "https://github.com/fiszczyp/supramol_explorer"
+site_dir: "site"
+copyright: Copyright &copy; 2024 Filip Szczypiński
+
+nav:
+  - Home: index.md
+  - Database Schema: database.md
+
+theme:
+  name: "material"
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.code.annotate
+    - content.code.copy
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            docstring_section_style: table
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            signature_crossrefs: true
+
+          docstring_options:
+            ignore_init_summary: true
+
+markdown_extensions:
+  - toc:
+      permalink: true

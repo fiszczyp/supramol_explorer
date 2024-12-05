@@ -32,6 +32,8 @@ classifiers = [
     dev = [
         "interrogate",
         "ipython",
+        "mkdocs-material",
+        "mkdocstrings[python]>=0.18",
         "nox",
         "pre-commit",
         "pytest",
