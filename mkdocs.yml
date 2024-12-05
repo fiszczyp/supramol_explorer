@@ -3,8 +3,10 @@ site_description: "Self-Assembly of Metal-Organic Supramolecular Architectures"
 site_author: "Filip T. Szczypiński"
 site_url: "https://fiszczyp.github.io/supramol_explorer"
 repo_url: "https://github.com/fiszczyp/supramol_explorer"
+repo_name: "fiszczyp/supramol_explorer"
 site_dir: "site"
 copyright: Copyright &copy; 2024 Filip Szczypiński
+edit_uri: blob/main/docs/
 
 nav:
   - Home: index.md
