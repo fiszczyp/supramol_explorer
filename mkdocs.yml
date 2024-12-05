@@ -14,6 +14,23 @@ nav:
 
 theme:
   name: "material"
+  logo: img/samosa.svg
+  favicon: img/samosa.svg
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
   features:
     - announce.dismiss
     - content.action.edit
@@ -49,3 +66,8 @@ plugins:
 markdown_extensions:
   - toc:
       permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/fiszczyp.bsky.social
